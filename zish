@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ $(basename "$PWD") == "zish" ]; then
+	ZISHDIR=$PWD
+else
+	echo "This script must be run from inside of the cloned repository."
+	exit
+fi
+
+if [ "$EUID" -e 0 ]; then
+	read -p "Warning: changes made as root user only affect the root user. Continue? " -n 1 -r
+	echo ""
+	if [[ $REPLY =~ ^[Nn]$ ]]; then
+		exit
+	fi
+fi
+
+test -f /bin/zsh || echo "Zsh must be installed before executing this script."
+test -f "$HOME/.zshrc" && mv "$HOME/.zshrc" "$HOME/zshrc.old" && echo "~/.zshrc moved to ~/zshrc.old"
+
+echo 'export ZDOTDIR=$HOME/.config/zsh' | sudo tee -a /etc/zsh/zshenv
+mkdir -p "$HOME/.config/zsh/"
+cp "$ZISHDIR/zshrc" "$HOME/.config/zsh/.zshrc"
+
+sudo su
+mkdir -p /usr/share/zsh/plugins/
+cd /usr/share/zsh/plugins/ || echo "Could not access Zsh plugins folder!"
+
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+git clone https://github.com/zsh-users/zsh-autosuggestions.git
+git clone https://github.com/zsh-users/zsh-history-substring-search.git
+git clone https://github.com/zsh-users/zsh-completions.git
+
+echo "Script finished! Closing terminal window in three seconds..."
+sleep 3 && exit
