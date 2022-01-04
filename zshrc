@@ -2,8 +2,6 @@
 echo "Welcome to zsh, the zoomer shell"
 echo 'Type "man zsh" for instructions on how to use zsh'
 
-alias test="echo test"
-
 #move config file
 export ZDOTDIR=$HOME/.config/zsh
 HISTFILE=$HOME/.config/zsh/.zsh_history
